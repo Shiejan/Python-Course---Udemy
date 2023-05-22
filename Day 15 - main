@@ -1,0 +1,164 @@
+#Coffee Machine
+MENU = {
+    "espresso": {
+        "ingredients": {
+            "water": 50,
+            "coffee": 18,
+        },
+        "cost": 1.5,
+    },
+    "latte": {
+        "ingredients": {
+            "water": 200,
+            "milk": 150,
+            "coffee": 24,
+        },
+        "cost": 2.5,
+    },
+    "cappuccino": {
+        "ingredients": {
+            "water": 250,
+            "milk": 100,
+            "coffee": 24,
+        },
+        "cost": 3.0,
+    }
+}
+
+resources = {
+    "water": 300,
+    "milk": 200,
+    "coffee": 100,
+}
+
+money = 0
+mode = True
+money_good = True
+request_works = True
+Q = 0.25
+D = 0.10
+N = 0.05
+P = 0.01
+
+
+def resource_check():
+    """Checks to see if the machine has the required resources to make coffee, if not, it presents a statement saying
+    we don't have the resource"""
+    if coffee_choice == 'espresso':
+        if resources["water"] < MENU[coffee_choice]["ingredients"]["water"]:
+            return "Sorry there is not enough water"
+        elif resources["coffee"] < MENU[coffee_choice]["ingredients"]["coffee"]:
+            return "Sorry there is not enough coffee"
+
+    if coffee_choice == 'latte' or coffee_choice == 'cappuccino':
+        if resources["water"] < MENU[coffee_choice]["ingredients"]["water"]:
+            return "Sorry there is not enough water"
+        elif resources["milk"] < MENU[coffee_choice]["ingredients"]["milk"]:
+            return "Sorry there is not enough milk"
+        elif resources["coffee"] < MENU[coffee_choice]["ingredients"]["coffee"]:
+            return "Sorry there is not enough coffee"
+
+
+def make_drink():
+
+    if coffee_choice == 'espresso':
+        resources["water"] -= MENU[coffee_choice]["ingredients"]["water"]
+        resources["coffee"] -= MENU[coffee_choice]["ingredients"]["coffee"]
+        return f"Here is your {coffee_choice}!"
+
+    if coffee_choice == 'latte' or coffee_choice == 'cappuccino':
+        resources["water"] -= MENU[coffee_choice]["ingredients"]["water"]
+        resources["milk"] -= MENU[coffee_choice]["ingredients"]["milk"]
+        resources["coffee"] -= MENU[coffee_choice]["ingredients"]["coffee"]
+        return f"Here is your {coffee_choice}!"
+
+
+def transactions(total, coffee_choice):
+    """Calculate coins inserted and see if the user has enough money to buy a coffee or not"""
+
+    change = round(total - MENU[coffee_choice]["cost"], 3)
+    return f"Here is ${change} in change."
+
+
+def report(money):
+    """Format resources into printable report"""
+    water = resources["water"]
+    milk = resources["milk"]
+    coffee = resources["coffee"]
+    cash = round(money, 3)
+    return f"Water: {water}ml.\nMilk: {milk}ml \nCoffee: {coffee}g \nMoney: ${cash}"
+
+
+while mode:
+
+    while request_works:
+        request = input("What would you like? (espresso/latte/cappuccino): ").lower()
+
+        if request == 'espresso':
+            request_works = False
+            coffee_choice = "espresso"
+            if resources["water"] < MENU[coffee_choice]["ingredients"]["water"]:
+                print("Sorry there is not enough water.")
+                request_works = True
+            elif resources["coffee"] < MENU[coffee_choice]["ingredients"]["coffee"]:
+                print("Sorry there is not enough coffee.")
+                request_works = True
+
+        elif request == 'latte':
+            request_works = False
+            coffee_choice = "latte"
+            if resources["water"] < MENU[coffee_choice]["ingredients"]["water"]:
+                print("Sorry there is not enough water.")
+                request_works = True
+            elif resources["milk"] < MENU[coffee_choice]["ingredients"]["milk"]:
+                print("Sorry there is not enough milk.")
+                request_works = True
+            elif resources["coffee"] < MENU[coffee_choice]["ingredients"]["coffee"]:
+                print("Sorry there is not enough coffee.")
+                request_works = True
+
+        elif request == 'cappuccino':
+            request_works = False
+            coffee_choice = "cappuccino"
+            if resources["water"] < MENU[coffee_choice]["ingredients"]["water"]:
+                print("Sorry there is not enough water.")
+                request_works = True
+            elif resources["milk"] < MENU[coffee_choice]["ingredients"]["milk"]:
+                print("Sorry there is not enough milk.")
+                request_works = True
+            elif resources["coffee"] < MENU[coffee_choice]["ingredients"]["coffee"]:
+                print("Sorry there is not enough coffee.")
+                request_works = True
+
+        elif request == 'report':
+            print(report(money))
+        elif request == 'off':
+            request_works = False
+            mode = False
+            quit()
+
+        else:
+            print("Try again: ")
+    while money_good:
+        print("Please insert coins.")
+        quarters = int(input("How many quarters: "))
+        dimes = int(input("How many dimes: "))
+        nickels = int(input("How many nickels: "))
+        pennies = int(input("How many pennies: "))
+        q_value = Q * quarters
+        d_value = D * dimes
+        n_value = N * nickels
+        p_value = P * pennies
+        total = float(q_value + d_value + n_value + p_value)
+        if MENU[coffee_choice]["cost"] > total:
+            print("Sorry that's not enough money. Money refunded.")
+        else:
+            money_good = False
+
+    request_works = True
+    money_good = True
+
+    print(transactions(total, coffee_choice))
+    print(make_drink())
+    money += MENU[coffee_choice]["cost"]
+
